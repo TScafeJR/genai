@@ -3,8 +3,6 @@ package gemini
 import (
 	"context"
 	"fmt"
-	"regexp"
-	"strings"
 
 	"github.com/TScafeJR/genai/classifier"
 	"github.com/google/generative-ai-go/genai"
@@ -15,20 +13,6 @@ func getTextFromPart(p genai.Part) (string, bool) {
 		return string(textPart), true
 	}
 	return "", false
-}
-
-func parseTopics(s string) []string {
-	if s == "" {
-		return []string{}
-	}
-	topics := strings.Split(s, ", ")
-	re := regexp.MustCompile(`\d+\.\s*`)
-
-	for i, topic := range topics {
-		topics[i] = re.ReplaceAllString(topic, "")
-	}
-
-	return topics
 }
 
 func (c GeminiClient) GenerateContent(ctx context.Context, p classifier.Prompt) (classifier.Classification, error) {
@@ -46,7 +30,9 @@ func (c GeminiClient) GenerateContent(ctx context.Context, p classifier.Prompt) 
 		return classifier.Classification{}, fmt.Errorf("model.GenerateContent(): %w", err)
 	}
 
-	var classification classifier.Classification
+	classification := classifier.Classification{
+		Parts: []string{},
+	}
 
 	if len(resp.Candidates) > 0 {
 		for _, candidate := range resp.Candidates {
@@ -55,8 +41,7 @@ func (c GeminiClient) GenerateContent(ctx context.Context, p classifier.Prompt) 
 				for _, part := range content.Parts {
 					s, ok := getTextFromPart(part)
 					if ok {
-						topics := parseTopics(s)
-						classification.Topics = append(classification.Topics, topics...)
+						classification.Parts = append(classification.Parts, s)
 					}
 				}
 			}
