@@ -15,7 +15,10 @@ func getTextFromPart(p genai.Part) (string, bool) {
 	return "", false
 }
 
-func (c GeminiClient) GenerateContent(ctx context.Context, p classifier.Prompt) (classifier.Classification, error) {
+func (c *GeminiClient) GenerateContent(ctx context.Context, p classifier.Prompt) (classifier.Classification, error) {
+	if err := c.limit(ctx); err != nil {
+		return classifier.Classification{}, err
+	}
 	var model *genai.GenerativeModel
 	if len(p.Images) == 0 {
 		model = c.client.GenerativeModel("gemini-pro")

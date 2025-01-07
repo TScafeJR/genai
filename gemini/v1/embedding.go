@@ -13,7 +13,10 @@ func cleanPrompt(p classifier.Prompt) classifier.Prompt {
 	}
 }
 
-func (g GeminiClient) CreateEmbedding(ctx context.Context, p classifier.Prompt) ([]float32, error) {
+func (g *GeminiClient) CreateEmbedding(ctx context.Context, p classifier.Prompt) ([]float32, error) {
+	if err := g.limit(ctx); err != nil {
+		return nil, err
+	}
 	// need to remove images from the prompt for the time being since our model doesn't support images
 	prompt := toGenAIPrompt(cleanPrompt(p))
 	em := g.client.EmbeddingModel("embedding-001")
