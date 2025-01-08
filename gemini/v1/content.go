@@ -23,7 +23,7 @@ func (c *GeminiClient) GenerateContent(ctx context.Context, p classifier.Prompt)
 	}
 	var model *genai.GenerativeModel
 	if len(p.Images) == 0 {
-		model = c.client.GenerativeModel("gemini-pro")
+		model = c.client.GenerativeModel("gemini-1.5-flash")
 	} else {
 		model = c.client.GenerativeModel("gemini-pro-vision")
 	}
