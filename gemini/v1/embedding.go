@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/TScafeJR/genai/classifier"
+	"go.uber.org/zap"
 )
 
 func cleanPrompt(p classifier.Prompt) classifier.Prompt {
@@ -14,6 +15,8 @@ func cleanPrompt(p classifier.Prompt) classifier.Prompt {
 }
 
 func (g *GeminiClient) CreateEmbedding(ctx context.Context, p classifier.Prompt) ([]float32, error) {
+	g.logger.Debug("CreateEmbedding", zap.Any("prompt", p))
+
 	if err := g.limit(ctx); err != nil {
 		return nil, err
 	}

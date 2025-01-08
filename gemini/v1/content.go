@@ -6,6 +6,7 @@ import (
 
 	"github.com/TScafeJR/genai/classifier"
 	"github.com/google/generative-ai-go/genai"
+	"go.uber.org/zap"
 )
 
 func getTextFromPart(p genai.Part) (string, bool) {
@@ -16,6 +17,7 @@ func getTextFromPart(p genai.Part) (string, bool) {
 }
 
 func (c *GeminiClient) GenerateContent(ctx context.Context, p classifier.Prompt) (classifier.Classification, error) {
+	c.logger.Debug("GenerateContent", zap.Any("prompt", p))
 	if err := c.limit(ctx); err != nil {
 		return classifier.Classification{}, err
 	}
