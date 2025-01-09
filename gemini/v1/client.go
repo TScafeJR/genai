@@ -17,12 +17,19 @@ type GeminiClient struct {
 	client      *genai.Client
 	rateLimiter *rate.Limiter
 	mu          sync.Mutex
+	models      Models
+}
+
+type Models struct {
+	Text       string
+	MultiModal string
 }
 
 type Cfg struct {
 	Logger    *zap.Logger
 	ApiKey    string
 	RateLimit *ratelimit.RateLimit
+	Models    Models
 }
 
 func (c Cfg) Validate() error {
@@ -60,6 +67,7 @@ func NewGeminiClient(cfg Cfg) (GeminiClient, error) {
 		client:      client,
 		logger:      cfg.Logger,
 		rateLimiter: rate.NewLimiter(rate.Limit(ratePerSecond), cfg.RateLimit.MaxCalls),
+		models:      cfg.Models,
 	}, nil
 }
 

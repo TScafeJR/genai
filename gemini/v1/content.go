@@ -2,11 +2,16 @@ package gemini
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/TScafeJR/genai/classifier"
 	"github.com/google/generative-ai-go/genai"
 	"go.uber.org/zap"
+)
+
+var (
+	ErrModelUndefined = errors.New("model is undefined")
 )
 
 func getTextFromPart(p genai.Part) (string, bool) {
@@ -23,9 +28,17 @@ func (c *GeminiClient) GenerateContent(ctx context.Context, p classifier.Prompt)
 	}
 	var model *genai.GenerativeModel
 	if len(p.Images) == 0 {
-		model = c.client.GenerativeModel("gemini-1.5-flash")
+		if c.models.Text == "" {
+			return classifier.Classification{}, ErrModelUndefined
+		} else {
+			model = c.client.GenerativeModel(c.models.Text)
+		}
 	} else {
-		model = c.client.GenerativeModel("gemini-pro-vision")
+		if c.models.MultiModal == "" {
+			return classifier.Classification{}, ErrModelUndefined
+		} else {
+			model = c.client.GenerativeModel(c.models.MultiModal)
+		}
 	}
 
 	prompt := toGenAIPrompt(p)
