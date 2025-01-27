@@ -1,0 +1,51 @@
+openapi: 3.0.3
+info:
+  title: DeepSeek Content Generation API
+  description: API for generating content using DeepSeek's AI.
+  version: 1.0.0
+servers:
+  - url: https://api.deepseek.com/v1
+  - url: http://localhost:11434/
+paths:
+  /generate:
+    post:
+      summary: Generate content using DeepSeek
+      operationId: generateContent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                prompt:
+                  type: string
+                  description: Input text prompt to guide content generation.
+                options:
+                  type: object
+                  description: Optional settings for content generation.
+                  properties:
+                    max_tokens:
+                      type: integer
+                      description: Maximum number of tokens to generate.
+                      example: 100
+                    temperature:
+                      type: number
+                      description: Sampling temperature, between 0 and 1.
+                      example: 0.7
+      responses:
+        '200':
+          description: Content generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  content:
+                    type: string
+                    description: Generated content.
+        '400':
+          description: Invalid request
+        '500':
+          description: Internal server error
+
